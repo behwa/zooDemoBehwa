@@ -80,7 +80,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onBulkDelete }) =>
   };
 
   return (
-    <div className="container" style={{ maxWidth: '1200px', margin: '2rem auto' }}>
+    <div className="container" style={{ maxWidth: '1300px', margin: '2rem auto' }}>
       <h2 className="mb-4 text-center">Task List</h2>
       <TaskToolbar
         pageSize={pageSize}

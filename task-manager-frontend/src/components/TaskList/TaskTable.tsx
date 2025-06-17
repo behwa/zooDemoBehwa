@@ -96,6 +96,7 @@ const TaskTable: React.FC<Props> = ({
               <td>{task.createdby}</td>
               <td>{task.assignee || <span className="text-muted">Unassigned</span>}</td>
               <td>
+                <Link to={`/tasks/view/${task.id}`} className="btn btn-outline-primary btn-sm me-2">View</Link>
                 <Link to={`/tasks/edit/${task.id}`} className="btn btn-outline-primary btn-sm me-2">Edit</Link>
                 <button className="btn btn-outline-danger btn-sm" onClick={() => onDelete(task.id)}>Delete</button>
               </td>

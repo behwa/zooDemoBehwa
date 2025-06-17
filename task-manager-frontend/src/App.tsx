@@ -8,6 +8,7 @@ import { sortTasks } from './components/TaskList/taskUtils';
 import Navbar from './components/Navbar';  // adjust path if needed
 import Signup from './Signup';
 import Login from './Login';
+import ViewTask from './ViewTask';
 
 interface Task {
   id: string;
@@ -76,6 +77,7 @@ function App() {
             </>
           } />
           <Route path="/tasks/edit/:id" element={<EditTask onUpdated={fetchTasks} />} />
+          <Route path="/tasks/view/:id" element={<ViewTask />} />
         </Routes>
       </div>
     </Router>
