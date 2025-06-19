@@ -32,17 +32,33 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const fetchTasks = async () => {
-    const res = await fetch('http://localhost:4000/api/tasks');
-    const data = await res.json();
+    try {
+      const res = await fetch('http://localhost:4000/api/tasks');
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
-    const tasksWithCreatedBy = data.map((task: any) => ({
-      ...task,
-      createdby: task.createdby || 'Unknown',
-    }));
+      const data = await res.json();
 
-    // Sort by createdtime descending (newest first)
-    const sortedTasks = sortTasks(tasksWithCreatedBy, 'createdtime', 'desc');
-    setTasks(sortedTasks);
+      // Ensure data is an array
+      if (!Array.isArray(data)) {
+        console.error('Unexpected response format:', data);
+        return;
+      }
+
+      const tasksWithCreatedBy = data.map((task: any) => ({
+        ...task,
+        createdby: task.createdby || 'Unknown',
+      }));
+
+      // Sort by createdtime descending (newest first)
+      const sortedTasks = sortTasks(tasksWithCreatedBy, 'createdtime', 'desc');
+      setTasks(sortedTasks);
+      
+    } catch (err) {
+      console.error('Failed to fetch tasks:', err);
+    }
   };
 
   useEffect(() => {
@@ -50,17 +66,42 @@ function App() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    await fetch(`http://localhost:4000/api/tasks/${id}`, { method: 'DELETE' });
-    fetchTasks();
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/tasks/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to delete task ${id}`);
+      }
+    } catch (err) {
+      console.error(err);
+      fetchTasks();
+    }
   };
 
   const handleBulkDelete = async (ids: string[]) => {
-    await Promise.all(ids.map(id =>
-      fetch(`http://localhost:4000/api/tasks/${id}`, { method: 'DELETE' })
-    ));
-    fetchTasks();
-  };
+    setTasks((prev) => prev.filter((task) => !ids.includes(task.id)));
 
+    try {
+      await Promise.all(
+        ids.map(async (id) => {
+          const res = await fetch(`http://localhost:4000/api/tasks/${id}`, {
+            method: 'DELETE',
+          });
+
+          if (!res.ok) {
+            throw new Error(`Failed to delete task ${id}`);
+          }
+        })
+      );
+    } catch (err) {
+      console.error(err);
+      fetchTasks(); // reload from backend if anything fails
+    }
+  };
 
   return (
     <Router>

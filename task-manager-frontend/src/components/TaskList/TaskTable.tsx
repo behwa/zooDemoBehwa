@@ -86,7 +86,9 @@ const TaskTable: React.FC<Props> = ({
 
               <td>{globalIndex}</td>
               <td>{task.title}</td>
-              <td>{task.description}</td>
+              <td style={{ maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={task.description}>
+                {task.description}
+              </td>
               <td>
                 {task.status === 'Completed' && <span className="badge bg-success">Completed ✅</span>}
                 {task.status === 'In Progress' && <span className="badge bg-info text-dark">In Progress ⏳</span>}
